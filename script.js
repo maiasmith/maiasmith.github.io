@@ -1,6 +1,8 @@
 // vizObj
 var vizObj = {
-    textColour: "#797979"
+    textColour: "#797979",
+    titleFontSize: 27,
+    margin: 10
 };
 
 // get voronoi vertices
@@ -96,20 +98,21 @@ var cells = svg.append("g")
     })
 
 // plot titles
-var titleFontSize = 27;
+
 var titles = svg.append("g")
     .attr("class", "titlesG")
     .selectAll("title")
     .data(titles)
     .enter().append("text")
-    .attr("x", 10)
-    .attr("y", function(d, i) { return 10 + i*(titleFontSize+5); }) // 10 for space at top
+    .attr("x", vizObj.margin)
+    .attr("y", function(d, i) { return vizObj.margin + i*(vizObj.titleFontSize+5); }) // 10 for space at top
                                                                    // 5 for spacing between titles
     .attr("dy", "+0.71em")
     .attr("class", "title")
-    .attr("font-size", titleFontSize)
+    .attr("font-size", vizObj.titleFontSize)
     .attr("font-family", "Arial")
     .attr("fill", vizObj.textColour)
+    .attr("fill-opacity", 1)
     .style("cursor", "pointer")
     .text(function(d) { return d.toUpperCase().split("").join(" "); })
     .on("mouseover", function(d) {
@@ -119,6 +122,18 @@ var titles = svg.append("g")
     .on("mouseout", function(d) {
         // title text colour reset
         d3.select(this).attr("fill", vizObj.textColour);
+    })
+    .on("click", function(d) {
+        var thisTitle = d;
+
+        // fade out other titles
+        d3.selectAll(".title")
+            .transition()
+            .duration(800)
+            .attr("fill-opacity", function(d) {
+                return (d == thisTitle) ? 1 : 0;
+            })
+            .attr("y", vizObj.margin);
     });
 
    
