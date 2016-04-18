@@ -135,11 +135,26 @@ $(".title").bind('touchstart click', function(){
         // fade out other titles
         d3.selectAll(".title")
             .transition()
-            .duration(800)
+            .duration(500)
             .attr("fill-opacity", function(d) {
                 return (d == thisTitle) ? 1 : 0;
-            })
+            });
+
+        // move all titles to top of page
+         d3.selectAll(".title")
+            .transition()
+            .delay(500)
+            .duration(800)
             .attr("y", vizObj.margin);  
+
+        // fade out all voronoi cells
+        d3.selectAll(".voronoiCell")
+            .transition()
+            .delay(function(d,i) { return i * 10; })
+            .duration(1250)
+            .attr('fill-opacity', 0)
+            .attr('stroke-opacity', 0.1)
+            .attr("stroke", "#D6D5D5");
     }
 
     return false

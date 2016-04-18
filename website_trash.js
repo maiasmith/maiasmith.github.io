@@ -247,3 +247,18 @@ var titles = svg.append("g")
     //         })
     //         .attr("y", vizObj.margin);
     // });
+
+// keep only the voronoi cell that was clicked on
+        d3.selectAll(".voronoiCell")
+            .transition()
+            .delay(function(d,i) { return i * 7; })
+            .duration(1250)
+            .attr('fill-opacity', function(d) {
+                return (d.id == this_cell_id) ? 1 : 0; // only keep this cell that was clicked on
+            })
+            .attr('stroke-opacity', function(d) {
+                return (d.id == this_cell_id) ? 1 : 0.2; // only keep this cell that was clicked on
+            })
+            .attr("stroke", function(d) {
+                return (d.id == this_cell_id) ? colour_dimmer[d.randInt] : "#D6D5D5";
+            });
