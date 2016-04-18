@@ -10,7 +10,8 @@ var vertex_coords = vertices.map(function(vertex) { // ready for voronoi functio
 });
 
 // fill the first vertices with page titles (e.g. "About", etc.)
-var titles = ["About", "Curriculum Vitae", "Projects", "Contact", "Music", "Photography"];
+var titles = ["About", "Curriculum Vitae", "Projects", "Publications", 
+    "Contact", "Music", "Photography"];
 titles.forEach(function(title, title_i) {
     vertices[title_i]["title"] = title;
 })
@@ -29,9 +30,6 @@ var colour_dimmer = colour.map(function(col) {
 var colour_brighter = colour.map(function(col) {
     return _increase_brightness(col, 25);
 });
-console.log(colour);
-console.log(colour_dimmer);
-console.log(colour_brighter);
 
 // svgs
 var svg = d3.select("body").append("svg")
@@ -90,7 +88,7 @@ var cells = svg.append("g")
 
         d3.selectAll(".voronoiCell")
             .transition()
-            .delay(function(d,i) { return i * 20; })
+            .delay(function(d,i) { return i * 7; })
             .duration(1250)
             .attr('fill-opacity', function(d) {
                 return (d.id == this_cell_id) ? 1 : 0; // only keep this cell that was clicked on
