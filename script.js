@@ -122,9 +122,15 @@ var titles = svg.append("g")
     .on("mouseout", function(d) {
         // title text colour reset
         d3.select(this).attr("fill", vizObj.textColour);
-    })
-    .on("click", function(d) {
-        var thisTitle = d;
+    });
+
+var flag = false;
+$(".title").bind('touchstart click', function(){
+    if (!flag) {
+        flag = true;
+        setTimeout(function(){ flag = false; }, 100);
+
+        var thisTitle = d3.select(this).data();
 
         // fade out other titles
         d3.selectAll(".title")
@@ -133,7 +139,8 @@ var titles = svg.append("g")
             .attr("fill-opacity", function(d) {
                 return (d == thisTitle) ? 1 : 0;
             })
-            .attr("y", vizObj.margin);
-    });
+            .attr("y", vizObj.margin);  
+    }
 
-   
+    return false
+});

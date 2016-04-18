@@ -234,3 +234,16 @@ var titles = svg.append("g")
     .attr("pointer-events", "none")
     .attr("fill", curVizObj.textColour)
     .text(function(d) { return d.title.toUpperCase().split("").join(" "); });
+
+    // .on("click", function(d) {
+    //     var thisTitle = d;
+
+    //     // fade out other titles
+    //     d3.selectAll(".title")
+    //         .transition()
+    //         .duration(800)
+    //         .attr("fill-opacity", function(d) {
+    //             return (d == thisTitle) ? 1 : 0;
+    //         })
+    //         .attr("y", vizObj.margin);
+    // });
