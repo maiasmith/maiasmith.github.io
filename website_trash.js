@@ -221,3 +221,16 @@ var titles = svg.append("g")
         // if it's a key cell
         console.log("i = " + i + " titles.length " + titles.length);
         if (i < titles.length) {
+
+
+
+             .data(vertices.slice(0,titles.length))
+    .enter().append("text")
+    .append("textPath")
+    .attr("class", function(d, i) { return "textpath_" + i; })
+    .attr("xlink:href", function(d, i) { return "#voronoiCellPath_" + i; })
+    .attr("font-size", "20px")
+    .attr("font-family", "Arial")
+    .attr("pointer-events", "none")
+    .attr("fill", curVizObj.textColour)
+    .text(function(d) { return d.title.toUpperCase().split("").join(" "); });

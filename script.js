@@ -1,17 +1,17 @@
 // vizObj
-var curVizObj = {
+var vizObj = {
     textColour: "#797979"
 };
 
 // get voronoi vertices
-var vertices = _getVoronoiVertices(curVizObj, 3); // x, y, real_cell
+var vertices = _getVoronoiVertices(vizObj, 3); // x, y, real_cell
 var vertex_coords = vertices.map(function(vertex) { // ready for voronoi function
     return [vertex.x, vertex.y];
 });
 
 // fill the first vertices with page titles (e.g. "About", etc.)
-var titles = ["About", "Curriculum Vitae", "Projects", "Publications", 
-    "Contact", "Music", "Photography"];
+var titles = ["About", "CV", "Projects", "Publications", 
+    "Music", "Photography", "Contact"];
 titles.forEach(function(title, title_i) {
     vertices[title_i]["title"] = title;
 })
@@ -52,7 +52,7 @@ var cells = svg.append("g")
     .attr("class", "voronoiCell")
     .attr("d", _polygon)
     .attr("fill", function(d, i) {
-        d.randInt = Math.round(_random(curVizObj) * (nColours-1));
+        d.randInt = Math.round(_random(vizObj) * (nColours-1));
         return colour[d.randInt];
     })
     .attr("stroke", function(d, i) {
@@ -70,18 +70,12 @@ var cells = svg.append("g")
         d3.select(this).attr("fill", function(d) {
             return colour_brighter[d.randInt];
         })
-
-        // darken text
-        d3.select(".textPath_" + i).attr("fill", "black");
     })
     .on("mouseout", function(d, i) {
         // return cell brightness to normal
         d3.select(this).attr("fill", function(d) {
             return colour[d.randInt];
         })
-
-        // reset text colour
-        d3.select(".textPath_" + i).attr("fill", curVizObj.textColour);
     })
     .on("click", function(d, i) {
         var this_cell_id = d.id;  // identifier for this cell
@@ -102,16 +96,29 @@ var cells = svg.append("g")
     })
 
 // plot titles
+var titleFontSize = 20;
 var titles = svg.append("g")
     .attr("class", "titlesG")
     .selectAll("title")
-    .data(vertices.slice(0,titles.length))
+    .data(titles)
     .enter().append("text")
-    .append("textPath")
-    .attr("class", function(d, i) { return "textpath_" + i; })
-    .attr("xlink:href", function(d, i) { return "#voronoiCellPath_" + i; })
-    .attr("font-size", "20px")
+    .attr("x", 10)
+    .attr("y", function(d, i) { return 10 + i*(titleFontSize+5); }) // 10 for space at top
+                                                                   // 5 for spacing between titles
+    .attr("dy", "+0.71em")
+    .attr("class", "title")
+    .attr("font-size", titleFontSize)
     .attr("font-family", "Arial")
-    .attr("pointer-events", "none")
-    .attr("fill", curVizObj.textColour)
-    .text(function(d) { return d.title.toUpperCase().split("").join(" "); });
+    .attr("fill", vizObj.textColour)
+    .style("cursor", "pointer")
+    .text(function(d) { return d.toUpperCase().split("").join(" "); })
+    .on("mouseover", function(d) {
+        // title text colour darker
+        d3.select(this).attr("fill", "black");
+    })
+    .on("mouseout", function(d) {
+        // title text colour reset
+        d3.select(this).attr("fill", vizObj.textColour);
+    });
+
+   
