@@ -96,7 +96,7 @@ var cells = svg.append("g")
     })
 
 // plot titles
-var titleFontSize = 20;
+var titleFontSize = 27;
 var titles = svg.append("g")
     .attr("class", "titlesG")
     .selectAll("title")
