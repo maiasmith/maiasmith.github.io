@@ -14,11 +14,6 @@ var vertex_coords = vertices.map(function(vertex) { // ready for voronoi functio
 // fill the first vertices with page titles (e.g. "About", etc.)
 var titles = ["About", "CV", "Projects", "Publications", 
     "Music", "Photography", "Contact"];
-titles.forEach(function(title, title_i) {
-    vertices[title_i]["title"] = title;
-})
-console.log("vertices");
-console.log(vertices);
 
 // page setup
 var width = window.innerWidth,
@@ -40,6 +35,8 @@ var svg = d3.select("body").append("svg")
 
 // voronoi function for this sample
 var voronoi = d3.geom.voronoi();
+console.log("voronoi(vertex_coords)");
+console.log(voronoi(vertex_coords));
 
 // plot cells
 var cells = svg.append("g")
@@ -52,14 +49,15 @@ var cells = svg.append("g")
         return d.id; 
     })
     .attr("class", "voronoiCell")
-    .attr("d", _polygon)
+    .attr("d", function(d) {
+        d.path = _polygon(d);
+        return d.path;
+    })
     .attr("fill", function(d, i) {
-        d.randInt = Math.round(_random(vizObj) * (nColours-1));
+        d.randInt = i % nColours;
         return colour[d.randInt];
     })
-    .attr("stroke", function(d, i) {
-        return colour_dimmer[d.randInt];
-    })
+    .attr("stroke", "#D6D5D5")
     .attr("stroke-width", "5px")
     .attr("fill-opacity", 1)
     .attr("stroke-opacity", 1)
@@ -78,24 +76,7 @@ var cells = svg.append("g")
         d3.select(this).attr("fill", function(d) {
             return colour[d.randInt];
         })
-    })
-    .on("click", function(d, i) {
-        var this_cell_id = d.id;  // identifier for this cell
-
-        d3.selectAll(".voronoiCell")
-            .transition()
-            .delay(function(d,i) { return i * 7; })
-            .duration(1250)
-            .attr('fill-opacity', function(d) {
-                return (d.id == this_cell_id) ? 1 : 0; // only keep this cell that was clicked on
-            })
-            .attr('stroke-opacity', function(d) {
-                return (d.id == this_cell_id) ? 1 : 0.2; // only keep this cell that was clicked on
-            })
-            .attr("stroke", function(d) {
-                return (d.id == this_cell_id) ? colour_dimmer[d.randInt] : "#D6D5D5";
-            });
-    })
+    });
 
 // plot titles
 

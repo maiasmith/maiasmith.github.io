@@ -260,5 +260,52 @@ var titles = svg.append("g")
                 return (d.id == this_cell_id) ? 1 : 0.2; // only keep this cell that was clicked on
             })
             .attr("stroke", function(d) {
+
+
+
+    
+// every 5 seconds, update voronoi vertices
+window.setInterval(function(){
+    // modify vertices
+    vertex_coords = vertex_coords.map(function(coord) {
+        return [coord[0] + (Math.random() * 2 - 1), 
+                coord[1] + (Math.random() * 2 - 1)]
+    });
+
+    console.log("new coords");
+    console.log(vertex_coords[0]);
+
+    console.log("de selection");
+    console.log(d3.selectAll(".voronoiCell"));
+
+    // update voronoi plot
+    var updatedCells = d3.select(".cellsG").selectAll(".voronoiCell")
+        .data(voronoi(vertex_coords), _polygon);
+    updatedCells.enter().append("path");
+    updatedCells
+            .transition()
+            .duration(1000)
+            .attrTween("d", _pathTween(vizObj));
+
+    // updatedCells
+    //     .attr("id", function(d, i) { 
+    //         d.id = "voronoiCellPath_" + i;
+    //         return d.id; 
+    //     })
+    //     .attr("class", "voronoiCell")
+    //     .attr("d", _polygon)
+    //     .attr("fill", function(d, i) {
+    //         d.randInt = i % nColours;
+    //         return colour[d.randInt];
+    //     })
+    //     .attr("stroke", "#D6D5D5")
+    //     .attr("stroke-width", "5px")
+    //     .attr("fill-opacity", 1)
+    //     .attr("stroke-opacity", 1)
+    // updatedCells.exit().remove();
+
+
+
+}, 3000);
                 return (d.id == this_cell_id) ? colour_dimmer[d.randInt] : "#D6D5D5";
             });

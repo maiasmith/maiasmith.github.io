@@ -102,6 +102,47 @@ function _polygon(d) {
   return "M" + d.join("L") + "Z";
 }
 
+/* tween function to transition to the next path ("path" in the data)
+* @param {Object} curVizObj
+* Note: situations other than "move" - could be an exit situation, where the next path is blank
+*/
+function _pathTween(curVizObj) { 
+    
+    var precision = 4;
+
+    return function() {
+        var dest_path,
+            path0,
+            path1,
+            n0, 
+            n1,
+            distances,
+            points,
+            p0,
+            p1;
+
+        // for an exit situation, the path to move to is a line in the centre of the timesweep svg
+        dest_path = this.__data__.path; 
+        path0 = this;
+        path1 = path0.cloneNode();
+        n0 = path0.getTotalLength();
+        n1 = (path1.setAttribute("d", dest_path), path1).getTotalLength();
+
+        // Uniform sampling of distance based on specified precision.
+        distances = [0], i = 0, dt = precision / Math.max(n0, n1);
+        while ((i += dt) < 1) distances.push(i);
+        distances.push(1);
+        // Compute point-interpolators at each distance.
+        points = distances.map(function(t) {
+            p0 = path0.getPointAtLength(t * n0);
+            p1 = path1.getPointAtLength(t * n1);
+            return d3.interpolate([p0.x, p0.y], [p1.x, p1.y]);
+        });
+        return function(t) {
+            return t < 1 ? "M" + points.map(function(p) { return p(t); }).join("L") : dest_path;
+        };
+    };
+}
 // GENERAL FUNCTIONS
 
 /* random number generator [0,1], 
