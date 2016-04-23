@@ -5,11 +5,22 @@ var vizObj = {
     margin: 10
 };
 
+// voronoi function for this sample
+var voronoi = d3.geom.voronoi();
+
 // get voronoi vertices
 var vertices = _getVoronoiVertices(vizObj, 3); // x, y, real_cell
 var vertex_coords = vertices.map(function(vertex) { // ready for voronoi function
     return [vertex.x, vertex.y];
 });
+var paths = voronoi(vertex_coords).map(function(path_points) {
+    return {
+        path: _polygon(path_points),
+        path2: "M0,0c100,0 0,100 100,100c100,0 0,-100 100,-100"
+    };
+});
+console.log("paths");
+console.log(paths);
 
 // fill the first vertices with page titles (e.g. "About", etc.)
 var titles = ["About", "CV", "Projects", "Publications", 
@@ -33,16 +44,12 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-// voronoi function for this sample
-var voronoi = d3.geom.voronoi();
-console.log("voronoi(vertex_coords)");
-console.log(voronoi(vertex_coords));
 
 // plot cells
 var cells = svg.append("g")
     .classed("cellsG", true)
     .selectAll("path")
-    .data(voronoi(vertex_coords), _polygon)
+    .data(paths)
     .enter().append("path")
     .attr("id", function(d, i) { 
         d.id = "voronoiCellPath_" + i;
@@ -50,7 +57,6 @@ var cells = svg.append("g")
     })
     .attr("class", "voronoiCell")
     .attr("d", function(d) {
-        d.path = _polygon(d);
         return d.path;
     })
     .attr("fill", function(d, i) {
@@ -105,6 +111,7 @@ var titles = svg.append("g")
         d3.select(this).attr("fill", vizObj.textColour);
     });
 
+
 var flag = false;
 $(".title").bind('touchstart click', function(){
     if (!flag) {
@@ -132,10 +139,67 @@ $(".title").bind('touchstart click', function(){
         d3.selectAll(".voronoiCell")
             .transition()
             .delay(function(d,i) { return i * 10; })
-            .duration(1250)
+            .duration(300)
             .attr('fill-opacity', 0)
             .attr('stroke-opacity', 0.1)
             .attr("stroke", "#D6D5D5");
+
+        // for each title, act accordingly
+        if (thisTitle == "Music") {
+            setTimeout(function() {
+                d3.select("svg")
+                    .append("text")  
+                    .attr("x", width/2)
+                    .attr("y", height/2 - (vizObj.titleFontSize + 50))
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", vizObj.titleFontSize)
+                    .attr("font-family", "Arial")
+                    .attr("fill", vizObj.textColour)
+                    .attr("fill-opacity", 0)
+                    .style("cursor", "pointer")
+                    .text("check out my SoundCloud")
+                    .on("click", function() { // open soundcloud
+                        window.open("https://soundcloud.com/maia-smith-549730900"); 
+                    })
+                    .on("mouseover", function() {
+                        // title text colour darker
+                        d3.select(this).attr("fill", "black");
+                    })
+                    .on("mouseout", function(d) {
+                        // title text colour reset
+                        d3.select(this).attr("fill", vizObj.textColour);
+                    })
+                    .transition()
+                    .duration(500)
+                    .attr("fill-opacity", 1); 
+                d3.select("svg")
+                    .append("text")
+                    .attr("x", width/2)
+                    .attr("y", height/2)
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", vizObj.titleFontSize)
+                    .attr("font-family", "Arial")
+                    .attr("fill", vizObj.textColour)
+                    .attr("fill-opacity", 0)
+                    .style("cursor", "pointer")
+                    .text("regular performances with The Postmodern Camerata")
+                    .on("click", function() { // open soundcloud
+                        window.open("https://postmoderncamerata.com"); 
+                    })
+                    .on("mouseover", function() {
+                        // title text colour darker
+                        d3.select(this).attr("fill", "black");
+                    })
+                    .on("mouseout", function(d) {
+                        // title text colour reset
+                        d3.select(this).attr("fill", vizObj.textColour);
+                    })
+                    .transition()
+                    .duration(500)
+                    .attr("fill-opacity", 1); 
+            }, 1000);
+
+        }
     }
 
     return false
