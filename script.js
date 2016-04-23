@@ -205,6 +205,65 @@ $(".title").bind('touchstart click', function(){
                         .duration(500)
                         .attr("fill-opacity", 1); 
                 }, 1000);
+            }
+
+            if (thisTitle == "Contact") {
+                setTimeout(function() {
+                    d3.select("svg")
+                        .append("text")  
+                        .attr("x", width/2)
+                        .attr("y", height/2 - (vizObj.titleFontSize + 50))
+                        .attr("text-anchor", "middle")
+                        .attr("font-size", vizObj.titleFontSize)
+                        .attr("font-family", "Arial")
+                        .attr("fill", vizObj.textColour)
+                        .attr("fill-opacity", 0)
+                        .style("cursor", "pointer")
+                        .text("778-580-7586")
+                        .transition()
+                        .duration(500)
+                        .attr("fill-opacity", 1); 
+                    d3.select("svg")
+                        .append("text")
+                        .attr("x", width/2)
+                        .attr("y", height/2)
+                        .attr("text-anchor", "middle")
+                        .attr("font-size", vizObj.titleFontSize)
+                        .attr("font-family", "Arial")
+                        .attr("fill", vizObj.textColour)
+                        .attr("fill-opacity", 0)
+                        .style("cursor", "pointer")
+                        .text("maiaannesmith@gmail.com")
+                        .transition()
+                        .duration(500)
+                        .attr("fill-opacity", 1); 
+                    d3.select("svg")
+                        .append("text")
+                        .attr("x", width/2)
+                        .attr("y", height/2 + (vizObj.titleFontSize + 50))
+                        .attr("text-anchor", "middle")
+                        .attr("font-size", vizObj.titleFontSize)
+                        .attr("font-family", "Arial")
+                        .attr("fill", vizObj.textColour)
+                        .attr("fill-opacity", 0)
+                        .style("cursor", "pointer")
+                        .text("LinkedIn")
+                        .on("click", function() { 
+                            window.open("https://www.linkedin.com/in/maia-smith-15710771"); 
+                        })
+                        .on("mouseover", function() {
+                            // title text colour darker
+                            d3.select(this).attr("fill", "black");
+                        })
+                        .on("mouseout", function(d) {
+                            // title text colour reset
+                            d3.select(this).attr("fill", vizObj.textColour);
+                        })
+                        .transition()
+                        .duration(500)
+                        .attr("fill-opacity", 1); 
+                        
+                }, 1000);
 
             }
         }
