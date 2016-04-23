@@ -164,7 +164,7 @@ $(".title").bind('touchstart click', function(){
                         .attr("fill", vizObj.textColour)
                         .attr("fill-opacity", 0)
                         .style("cursor", "pointer")
-                        .text("check out my SoundCloud")
+                        .text("SoundCloud")
                         .on("click", function() { // open soundcloud
                             window.open("https://soundcloud.com/maia-smith-549730900"); 
                         })
@@ -189,9 +189,9 @@ $(".title").bind('touchstart click', function(){
                         .attr("fill", vizObj.textColour)
                         .attr("fill-opacity", 0)
                         .style("cursor", "pointer")
-                        .text("regular performances with The Postmodern Camerata")
-                        .on("click", function() { // open soundcloud
-                            window.open("https://postmoderncamerata.com"); 
+                        .text("YouTube")
+                        .on("click", function() {
+                            window.open("https://www.youtube.com/playlist?list=PLsGgSSlBeTOLzBptf24sOKODSgGfj7B6_"); 
                         })
                         .on("mouseover", function() {
                             // title text colour darker
