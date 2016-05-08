@@ -67,23 +67,7 @@ var cells = svg.append("g")
     .attr("stroke", "#D6D5D5")
     .attr("stroke-width", "5px")
     .attr("fill-opacity", 1)
-    .attr("stroke-opacity", 1)
-    .on("mouseover", function(d, i) {
-        // move this cell to the front
-        var sel = d3.select(this);
-        sel.moveToFront();
-
-        // increase brightness of cell
-        d3.select(this).attr("fill", function(d) {
-            return colour_brighter[d.randInt];
-        })
-    })
-    .on("mouseout", function(d, i) {
-        // return cell brightness to normal
-        d3.select(this).attr("fill", function(d) {
-            return colour[d.randInt];
-        })
-    })
+    .attr("stroke-opacity", 1);
 
 
 // plot titles
