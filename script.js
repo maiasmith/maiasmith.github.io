@@ -2,7 +2,9 @@
 var vizObj = {
     textColour: "#797979",
     titleFontSize: 27,
-    margin: 10
+    margin: 10,
+    flag: false,
+    onMainMenu: true // whether or not we're on the main menu
 };
 
 // voronoi function for this sample
@@ -95,7 +97,9 @@ var titles = svg.append("g")
     .attr("y", function(d, i) { return vizObj.margin + i*(vizObj.titleFontSize+5); }) // 10 for space at top
                                                                    // 5 for spacing between titles
     .attr("dy", "+0.71em")
-    .attr("class", "title")
+    .attr("class", function(d) {
+        return "title title_" + d;
+    })
     .attr("font-size", vizObj.titleFontSize)
     .attr("font-family", "Arial")
     .attr("fill", vizObj.textColour)
@@ -111,12 +115,66 @@ var titles = svg.append("g")
         d3.select(this).attr("fill", vizObj.textColour);
     });
 
+// back button
+var backButtonIcon_base64 = "data:image/svg+xml;base64," + "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjUxMnB4IiBoZWlnaHQ9IjUxMnB4IiB2aWV3Qm94PSIwIDAgMzA2IDMwNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMzA2IDMwNjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8Zz4KCTxnIGlkPSJjaGV2cm9uLWxlZnQiPgoJCTxwb2x5Z29uIHBvaW50cz0iMjQ3LjM1LDM1LjcgMjExLjY1LDAgNTguNjUsMTUzIDIxMS42NSwzMDYgMjQ3LjM1LDI3MC4zIDEzMC4wNSwxNTMgICAiIGZpbGw9IiM3OTc5NzkiLz4KCTwvZz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K"
+var backButtonIcon_height = 19;
+svg.append("image")
+    .attr("class", "backButtonIcon")
+    .attr("xlink:href", backButtonIcon_base64)
+    .attr("x", vizObj.margin)
+    .attr("y", vizObj.margin)
+    .attr("height", backButtonIcon_height)
+    .attr("width", backButtonIcon_height)
+    .attr("opacity", 0)
+    .on("mouseover", function() {
+        // if title is selected
+        if (!vizObj.onMainMenu) {
+            d3.select(this).attr("opacity", 1);            
+        }
+    })
+    .on("mouseout", function() {
+        // if title is selected
+        if (!vizObj.onMainMenu) {
+            d3.select(this).attr("opacity", 0.5);
+        }
+    })
+    .on("click", function() {
+        // if title is selected
+        if (!vizObj.onMainMenu) {
+            // return titles to their original place
+            d3.selectAll(".title")
+                .transition()
+                .duration(500)
+                .attr("x", vizObj.margin)
+                .attr("y", function(d, i) { return vizObj.margin + i*(vizObj.titleFontSize+5); }) // 10 for space at top
+                                                                               // 5 for spacing between titles
+                .attr("fill-opacity", 1);
 
-var flag = false;
+            // we're now on the main menu
+            vizObj.onMainMenu = true;
+
+            // hide back button
+            d3.select(this).attr("opacity", 0);
+
+            // remove all items not on main menu
+            d3.selectAll(".notMainMenu").remove();
+
+            // fade in all voronoi cells
+            d3.selectAll(".voronoiCell")
+                .transition()
+                .duration(300)
+                .attr('fill-opacity', 1)
+                .attr('stroke-opacity', 1);
+        }
+    })
+
 $(".title").bind('touchstart click', function(){
-    if (!flag) {
-        flag = true;
-        setTimeout(function(){ flag = false; }, 100);
+    if (!vizObj.flag) {
+        vizObj.flag = true;
+        setTimeout(function(){ vizObj.flag = false; }, 100);
+
+        // no longer on the main menu
+        vizObj.onMainMenu = false;
 
         var thisTitle = d3.select(this).data();
 
@@ -135,12 +193,20 @@ $(".title").bind('touchstart click', function(){
                     return (d == thisTitle) ? 1 : 0;
                 });
 
-            // move all titles to top of page
-             d3.selectAll(".title")
+            // move this title to top of page
+            d3.selectAll(".title_" + thisTitle)
                 .transition()
                 .delay(500)
                 .duration(800)
-                .attr("y", vizObj.margin);  
+                .attr("y", vizObj.margin)
+                .attr("x", vizObj.margin + backButtonIcon_height + vizObj.margin);  
+
+            // fade in back button
+            d3.select(".backButtonIcon")
+                .transition()
+                .delay(500)
+                .duration(500)
+                .attr("opacity", 0.5)
 
             // fade out all voronoi cells
             d3.selectAll(".voronoiCell")
@@ -148,14 +214,14 @@ $(".title").bind('touchstart click', function(){
                 .delay(function(d,i) { return i * 10; })
                 .duration(300)
                 .attr('fill-opacity', 0)
-                .attr('stroke-opacity', 0.1)
-                .attr("stroke", "#D6D5D5");
+                .attr('stroke-opacity', 0.1);
 
             // for each title, act accordingly
             if (thisTitle == "Music") {
                 setTimeout(function() {
                     d3.select("svg")
-                        .append("text")  
+                        .append("text")
+                        .attr("class", "notMainMenu")  
                         .attr("x", width/2)
                         .attr("y", height/2 - (vizObj.titleFontSize + 50))
                         .attr("text-anchor", "middle")
@@ -181,6 +247,7 @@ $(".title").bind('touchstart click', function(){
                         .attr("fill-opacity", 1); 
                     d3.select("svg")
                         .append("text")
+                        .attr("class", "notMainMenu") 
                         .attr("x", width/2)
                         .attr("y", height/2)
                         .attr("text-anchor", "middle")
@@ -211,6 +278,7 @@ $(".title").bind('touchstart click', function(){
                 setTimeout(function() {
                     d3.select("svg")
                         .append("text")  
+                        .attr("class", "notMainMenu") 
                         .attr("x", width/2)
                         .attr("y", height/2 - (vizObj.titleFontSize + 50))
                         .attr("text-anchor", "middle")
@@ -224,6 +292,7 @@ $(".title").bind('touchstart click', function(){
                         .attr("fill-opacity", 1); 
                     d3.select("svg")
                         .append("text")
+                        .attr("class", "notMainMenu") 
                         .attr("x", width/2)
                         .attr("y", height/2)
                         .attr("text-anchor", "middle")
@@ -237,6 +306,7 @@ $(".title").bind('touchstart click', function(){
                         .attr("fill-opacity", 1); 
                     d3.select("svg")
                         .append("text")
+                        .attr("class", "notMainMenu") 
                         .attr("x", width/2)
                         .attr("y", height/2 + (vizObj.titleFontSize + 50))
                         .attr("text-anchor", "middle")
