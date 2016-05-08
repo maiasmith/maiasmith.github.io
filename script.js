@@ -23,9 +23,9 @@ var paths = voronoi(vertex_coords).map(function(path_points) {
 console.log("paths");
 console.log(paths);
 
-// fill the first vertices with page titles (e.g. "About", etc.)
-var titles = ["About", "CV", "Projects", "Publications", 
-    "Music", "Photography", "Contact"];
+// fill the first vertices with page titles (e.g. "CV", etc.)
+var titles = ["CV", "Projects", "Publications", 
+    "Music", "Contact"];
 
 // page setup
 var width = window.innerWidth,
@@ -77,13 +77,16 @@ var titles = svg.append("g")
     .selectAll("title")
     .data(titles)
     .enter().append("text")
-    .attr("x", vizObj.margin)
-    .attr("y", function(d, i) { return vizObj.margin + i*(vizObj.titleFontSize+5); }) // 10 for space at top
-                                                                   // 5 for spacing between titles
+    .attr("x", width/2)
+    .attr("y", function(d, i) { 
+        // 5 for spacing between titles
+        return vizObj.margin + i*(vizObj.titleFontSize+5); 
+    }) 
     .attr("dy", "+0.71em")
     .attr("class", function(d) {
         return "title title_" + d;
     })
+    .attr("text-anchor", "middle")
     .attr("font-size", vizObj.titleFontSize)
     .attr("font-family", "Arial")
     .attr("fill", vizObj.textColour)
@@ -129,9 +132,11 @@ svg.append("image")
             d3.selectAll(".title")
                 .transition()
                 .duration(500)
-                .attr("x", vizObj.margin)
-                .attr("y", function(d, i) { return vizObj.margin + i*(vizObj.titleFontSize+5); }) // 10 for space at top
-                                                                               // 5 for spacing between titles
+                .attr("x", width/2)
+                .attr("y", function(d, i) { 
+                    // 5 for spacing between titles
+                    return vizObj.margin + i*(vizObj.titleFontSize+5); 
+                }) 
                 .attr("fill-opacity", 1);
 
             // we're now on the main menu
@@ -177,13 +182,16 @@ $(".title").bind('touchstart click', function(){
                     return (d == thisTitle) ? 1 : 0;
                 });
 
-            // move this title to top of page
+            // move this title to top left of page
             d3.selectAll(".title_" + thisTitle)
                 .transition()
                 .delay(500)
                 .duration(800)
                 .attr("y", vizObj.margin)
-                .attr("x", vizObj.margin + backButtonIcon_height + vizObj.margin);  
+                .attr("x", function() {
+                    return vizObj.margin + backButtonIcon_height + vizObj.margin + 
+                        this.getComputedTextLength()/2;
+                });  
 
             // fade in back button
             d3.select(".backButtonIcon")
