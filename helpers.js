@@ -36,7 +36,6 @@ d3.selection.prototype.moveToFront = function() {
 // function to increase brightness of hex colour
 // from: http://stackoverflow.com/questions/6443990/javascript-calculate-brighter-colour
 function _increase_brightness(hex, percent){
-    console.log("increasing");
     // strip the leading # if it's there
     hex = hex.replace(/^\s*#|\s*$/g, '');
 
@@ -121,7 +120,8 @@ function _pathTween() {
             p0,
             p1;
 
-        dest_path = this.__data__.path; 
+        // for an exit situation, the path to move to is a line in the centre of the timesweep svg
+        dest_path = this.__data__.dest_path; 
         path0 = this;
         path1 = path0.cloneNode();
         n0 = path0.getTotalLength();
@@ -143,6 +143,44 @@ function _pathTween() {
     };
 }
 
+// PIANO FUNCTIONS
+
+/* function to make piano keys
+* @param nKeys -- number of keys to make
+*/
+function _makePianoKeys(nKeys) {
+    var keyWidth = window.innerWidth / nKeys;
+    var keyHeight = 75;
+    var blackKeyWidth = keyWidth/2;
+    var blackKeyHeight = keyHeight/2;
+
+    var whiteKeys = [];
+    var blackKeys = [];
+    for (var i = 0; i < nKeys; i++) {
+        // add white keys
+        var cur_whiteKey_points = [[i*keyWidth, window.innerHeight-keyHeight],
+                        [i*keyWidth, window.innerHeight],
+                        [i*keyWidth + keyWidth, window.innerHeight],
+                        [i*keyWidth + keyWidth, window.innerHeight-keyHeight],
+                        [i*keyWidth, window.innerHeight-keyHeight]];
+        var cur_whiteKey = _polygon(cur_whiteKey_points);
+        whiteKeys.push(cur_whiteKey);
+
+        // add black keys
+        var remainder = (i+1) % 7;
+        if ([1,2,4,5,6].indexOf(remainder) != -1) {
+            var cur_blackKey_points = [[(i+1)*keyWidth - (blackKeyWidth/2), window.innerHeight-keyHeight],
+                        [(i+1)*keyWidth - (blackKeyWidth/2), window.innerHeight-keyHeight+blackKeyHeight],
+                        [(i+1)*keyWidth + (blackKeyWidth/2), window.innerHeight-keyHeight+blackKeyHeight],
+                        [(i+1)*keyWidth + (blackKeyWidth/2), window.innerHeight-keyHeight],
+                        [(i+1)*keyWidth - (blackKeyWidth/2), window.innerHeight-keyHeight]];
+            var cur_blackKey = _polygon(cur_blackKey_points);
+            blackKeys.push(cur_blackKey);
+        }
+    }
+
+    return {whiteKeys: whiteKeys, blackKeys: blackKeys};
+}
 
 // GENERAL FUNCTIONS
 

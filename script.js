@@ -19,15 +19,43 @@ var vertices = _getVoronoiVertices(vizObj, 3); // x, y, real_cell
 var vertex_coords = vertices.map(function(vertex) { // ready for voronoi function
     return [vertex.x, vertex.y];
 });
-var paths = voronoi(vertex_coords).map(function(path_points) {
+var indeces_to_remove = []; // list of paths that go off the page
+var paths = voronoi(vertex_coords).map(function(path_points, path_i) {
+
+    // remove paths that go off the page
+    path_points.forEach(function(pt) {
+        if (pt[0] > window.innerWidth || 
+            pt[0] < 0 ||
+            pt[1] > window.innerHeight ||
+            pt[1] < 0) {
+            indeces_to_remove.push(path_i)
+        }    
+    });
+
     return {
         path: _polygon(path_points)
     };
 });
+
+// remove paths that go off the page
+indeces_to_remove = _.uniq(indeces_to_remove);
+indeces_to_remove.sort(function(a, b){return b-a});
+indeces_to_remove.forEach(function(index) {
+    paths.splice(index,1);
+})
 console.log("paths");
 console.log(paths);
 
-// fill the first vertices with page titles (e.g. "CV", etc.)
+// piano keys
+var white_keys = _makePianoKeys(paths.length).whiteKeys;
+var black_keys = _makePianoKeys(paths.length).blackKeys;
+
+// set piano keys as dest path for voronoi cells
+paths.forEach(function(path, path_i) {
+    path.dest_path = (path_i < white_keys.length) ? white_keys[path_i] : null;
+})
+
+// page titles (e.g. "CV", etc.)
 var titles = ["CV", "Projects", "Publications", 
     "Music", "Contact"];
 
@@ -61,7 +89,7 @@ var cells = svg.append("g")
         return d.id; 
     })
     .attr("class", "voronoiCell")
-    .attr("d", function(d) {
+    .attr("d", function(d, i) {
         return d.path;
     })
     .attr("fill", function(d, i) {
@@ -104,6 +132,23 @@ var titles = svg.append("g")
         // title text colour reset
         d3.select(this).attr("fill", vizObj.textColour);
     });
+
+// plot black piano keys
+svg.append("g")
+    .attr("class", "blackPianoKeysG")
+    .selectAll(".blackPianoKey")
+    .data(black_keys)
+    .enter()
+    .append("path")
+    .attr("class", "blackPianoKey")
+    .attr("d", function(d) {
+        return d;
+    })
+    .attr("stroke", "white")
+    .attr("stroke-opacity", 0)
+    .attr('stroke-width', "2px")
+    .attr("fill", vizObj.textColour)
+    .attr("fill-opacity", 0);
 
 // plot maia smith
 svg.append("text")
@@ -171,6 +216,13 @@ svg.append("image")
                 .attr('fill-opacity', 1)
                 .attr('stroke-opacity', 1)
                 .attr("stroke", vizObj.voronoiCellStrokeLight);
+
+            // remove black piano keys
+            d3.selectAll(".blackPianoKey")
+                .transition()
+                .duration(300)
+                .attr("fill-opacity", 0)
+                .attr("stroke-opacity", 0);
         }
     })
 
@@ -217,17 +269,25 @@ $(".title").bind('touchstart click', function(){
                 .duration(500)
                 .attr("opacity", 0.5)
 
-            // fade out all voronoi cells
-            d3.selectAll(".voronoiCell")
-                .transition()
-                .delay(function(d,i) { return i * 10; })
-                .duration(300)
-                .attr('fill-opacity', 0)
-                .attr('stroke-opacity', 0.1)
-                .attr("stroke", vizObj.voronoiCellStrokeDarker);
-
             // for each title, act accordingly
             if (thisTitle == "Music") {
+
+                // turn voronoi cells into white piano keys
+                d3.selectAll(".voronoiCell")
+                    .transition()
+                    .delay(500)
+                    .duration(1000)
+                    .attrTween("d", _pathTween());
+
+                // expose black piano keys
+                d3.selectAll(".blackPianoKey")
+                    .transition()
+                    .delay(500)
+                    .duration(1000)
+                    .attr('fill-opacity', 1)
+                    .attr("stroke-opacity", 1);
+
+
                 setTimeout(function() {
                     d3.select("svg")
                         .append("text")
@@ -285,6 +345,16 @@ $(".title").bind('touchstart click', function(){
             }
 
             if (thisTitle == "Contact") {
+                
+                // fade out all voronoi cells
+                d3.selectAll(".voronoiCell")
+                    .transition()
+                    .delay(function(d,i) { return i * 10; })
+                    .duration(300)
+                    .attr('fill-opacity', 0)
+                    .attr('stroke-opacity', 0.1)
+                    .attr("stroke", vizObj.voronoiCellStrokeDarker);
+
                 setTimeout(function() {
                     d3.select("svg")
                         .append("text")  

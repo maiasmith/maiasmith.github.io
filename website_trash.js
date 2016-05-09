@@ -477,3 +477,48 @@ function transition(path, d0, d1) {
                 .resize(true)
                 .draw();
         }
+
+
+        function _pathTween() { 
+    
+    var precision = 4;
+
+    return function() {
+        var dest_path,
+            path0,
+            path1,
+            n0, 
+            n1,
+            distances,
+            points,
+            p0,
+            p1;
+
+        dest_path = this.__data__.path; 
+        path0 = this;
+        path1 = path0.cloneNode();
+        n0 = path0.getTotalLength();
+        n1 = (path1.setAttribute("d", dest_path), path1).getTotalLength();
+
+        // Uniform sampling of distance based on specified precision.
+        distances = [0], i = 0, dt = precision / Math.max(n0, n1);
+        while ((i += dt) < 1) distances.push(i);
+        distances.push(1);
+        // Compute point-interpolators at each distance.
+        points = distances.map(function(t) {
+            p0 = path0.getPointAtLength(t * n0);
+            p1 = path1.getPointAtLength(t * n1);
+            return d3.interpolate([p0.x, p0.y], [p1.x, p1.y]);
+        });
+        return function(t) {
+            return t < 1 ? "M" + points.map(function(p) { return p(t); }).join("L") : dest_path;
+        };
+    };
+}
+
+        if (i == 0) {
+        return "M74.06329990575145,227.84191869186833L95.82514518103439,246.65045372918325L171.95139089660867,208.30359238255969L181.94774166390536,192.27127721375996L122.46457502912455,123.61504373335325Z"
+        }
+        else {
+        return "M490.23640329369863,216.51439138685006L562.9299154182522,216.8424696079265L568.7008343535373,117.99761554303268L493.4470847985082,166.7441569861568Z"
+        }
