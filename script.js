@@ -1,10 +1,14 @@
 // vizObj
 var vizObj = {
     textColour: "#797979",
+    voronoiCellStrokeLight: "#FFFFFF",
+    voronoiCellStrokeDarker: "#D6D5D5",
     titleFontSize: 27,
+    maiaSmithTitleFontSize: 37, // size for MAIA SMITH
     margin: 10,
     flag: false,
-    onMainMenu: true // whether or not we're on the main menu
+    onMainMenu: true, // whether or not we're on the main menu
+    menuStartY: 100 // y-coordinate where the menu should start
 };
 
 // voronoi function for this sample
@@ -62,16 +66,15 @@ var cells = svg.append("g")
     })
     .attr("fill", function(d, i) {
         d.randInt = i % nColours;
-        return colour[d.randInt];
+        return colour_brighter[d.randInt];
     })
-    .attr("stroke", "#D6D5D5")
+    .attr("stroke", vizObj.voronoiCellStrokeLight)
     .attr("stroke-width", "5px")
     .attr("fill-opacity", 1)
     .attr("stroke-opacity", 1);
 
 
 // plot titles
-
 var titles = svg.append("g")
     .attr("class", "titlesG")
     .selectAll("title")
@@ -80,7 +83,7 @@ var titles = svg.append("g")
     .attr("x", width/2)
     .attr("y", function(d, i) { 
         // 5 for spacing between titles
-        return vizObj.margin + i*(vizObj.titleFontSize+5); 
+        return vizObj.menuStartY + vizObj.margin + i*(vizObj.titleFontSize+5); 
     }) 
     .attr("dy", "+0.71em")
     .attr("class", function(d) {
@@ -101,6 +104,19 @@ var titles = svg.append("g")
         // title text colour reset
         d3.select(this).attr("fill", vizObj.textColour);
     });
+
+// plot maia smith
+svg.append("text")
+    .attr("x", width/2)
+    .attr("y", vizObj.menuStartY/2) 
+    .attr("dy", "+0.35em")
+    .attr("class", "maiasmithTitle")
+    .attr("text-anchor", "middle")
+    .attr("font-size", vizObj.maiaSmithTitleFontSize)
+    .attr("font-family", "Arial")
+    .attr("fill", vizObj.textColour)
+    .attr("fill-opacity", 1)
+    .text("MAIA SMITH")
 
 // back button
 var backButtonIcon_base64 = "data:image/svg+xml;base64," + "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjUxMnB4IiBoZWlnaHQ9IjUxMnB4IiB2aWV3Qm94PSIwIDAgMzA2IDMwNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMzA2IDMwNjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8Zz4KCTxnIGlkPSJjaGV2cm9uLWxlZnQiPgoJCTxwb2x5Z29uIHBvaW50cz0iMjQ3LjM1LDM1LjcgMjExLjY1LDAgNTguNjUsMTUzIDIxMS42NSwzMDYgMjQ3LjM1LDI3MC4zIDEzMC4wNSwxNTMgICAiIGZpbGw9IiM3OTc5NzkiLz4KCTwvZz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K"
@@ -135,7 +151,7 @@ svg.append("image")
                 .attr("x", width/2)
                 .attr("y", function(d, i) { 
                     // 5 for spacing between titles
-                    return vizObj.margin + i*(vizObj.titleFontSize+5); 
+                    return vizObj.menuStartY + vizObj.margin + i*(vizObj.titleFontSize+5); 
                 }) 
                 .attr("fill-opacity", 1);
 
@@ -153,7 +169,8 @@ svg.append("image")
                 .transition()
                 .duration(300)
                 .attr('fill-opacity', 1)
-                .attr('stroke-opacity', 1);
+                .attr('stroke-opacity', 1)
+                .attr("stroke", vizObj.voronoiCellStrokeLight);
         }
     })
 
@@ -206,7 +223,8 @@ $(".title").bind('touchstart click', function(){
                 .delay(function(d,i) { return i * 10; })
                 .duration(300)
                 .attr('fill-opacity', 0)
-                .attr('stroke-opacity', 0.1);
+                .attr('stroke-opacity', 0.1)
+                .attr("stroke", vizObj.voronoiCellStrokeDarker);
 
             // for each title, act accordingly
             if (thisTitle == "Music") {

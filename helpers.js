@@ -121,7 +121,6 @@ function _pathTween() {
             p0,
             p1;
 
-        // for an exit situation, the path to move to is a line in the centre of the timesweep svg
         dest_path = this.__data__.path; 
         path0 = this;
         path1 = path0.cloneNode();
