@@ -122,7 +122,15 @@ function _pathTween(changeType) {
             p1;
 
         // for an exit situation, the path to move to is a line in the centre of the timesweep svg
-        dest_path = (changeType == "toPiano") ? this.__data__.dest_path : this.__data__.path; 
+        if (changeType == "toPiano") {
+            dest_path = this.__data__.piano_path; 
+        }
+        else if (changeType == "toMainMenu") {
+            dest_path = this.__data__.path; 
+        }
+        else if (changeType == "toClosedPages") {
+            dest_path = this.__data__.closedPages_path; 
+        }
         path0 = this;
         path1 = path0.cloneNode();
         n0 = path0.getTotalLength();
@@ -183,6 +191,33 @@ function _makePianoKeys(nKeys) {
     return {whiteKeys: whiteKeys, blackKeys: blackKeys};
 }
 
+/* function to make closed book pages
+*/
+function _makeClosedBookPages(nPages) {
+
+    var pageWidth = 100 / nPages; // width of the closed book is 30px
+    var pages = [];
+
+    // left-hand pages
+    for (var i = 0; i < nPages/2; i++) {
+        var cur_page = [[window.innerWidth/2 + i*pageWidth, window.innerHeight],
+                        [window.innerWidth/2 + (i+1)*pageWidth, window.innerHeight],
+                        [window.innerWidth/2 + (i+1)*pageWidth, 0],
+                        [window.innerWidth/2 + i*pageWidth, 0]]
+        pages.push(_polygon(cur_page));
+    }
+
+    // right-hand pages
+    for (var i = 0; i < nPages/2; i++) {
+        var cur_page = [[window.innerWidth/2 - i*pageWidth, window.innerHeight],
+                        [window.innerWidth/2 - (i+1)*pageWidth, window.innerHeight],
+                        [window.innerWidth/2 - (i+1)*pageWidth, 0],
+                        [window.innerWidth/2 - i*pageWidth, 0]]
+        pages.push(_polygon(cur_page));
+    }
+
+    return pages;
+}
 // GENERAL FUNCTIONS
 
 /* random number generator [0,1], 

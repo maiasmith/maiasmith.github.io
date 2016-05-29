@@ -43,17 +43,24 @@ indeces_to_remove.sort(function(a, b){return b-a});
 indeces_to_remove.forEach(function(index) {
     paths.splice(index,1);
 })
-console.log("paths");
-console.log(paths);
 
 // piano keys
 var white_keys = _makePianoKeys(paths.length).whiteKeys;
 var black_keys = _makePianoKeys(paths.length).blackKeys;
 
+// pages 
+var closed_pages = _makeClosedBookPages(paths.length);
+console.log("closed_pages");
+console.log(closed_pages);
+
 // set piano keys as dest path for voronoi cells
 paths.forEach(function(path, path_i) {
-    path.dest_path = (path_i < white_keys.length) ? white_keys[path_i] : null;
+    path.piano_path = (path_i < white_keys.length) ? white_keys[path_i] : null;
+    path.closedPages_path = (path_i < closed_pages.length) ? closed_pages[path_i] : null;
 })
+
+console.log("paths");
+console.log(paths);
 
 // page titles (e.g. "CV", etc.)
 var titles = ["CV", "Projects", "Publications", 
@@ -229,7 +236,7 @@ svg.append("image")
             d3.selectAll(".voronoiCell")
                 .transition()
                 .duration(1000)
-                .attrTween("d", _pathTween("fromPiano"));
+                .attrTween("d", _pathTween("toMainMenu"));
 
         }
     })
@@ -246,7 +253,18 @@ $(".title").bind('touchstart click', function(){
 
         // publications
         if (vizObj.thisTitle == "Publications") {
-            window.open("https://scholar.google.com/citations?view_op=list_works&hl=en&user=J8844tYAAAAJ&gmla=AJsN-F4WM8ISYnDVhcN0sGvNM59w-d-dy4wZsYu_WB6Ifs_31fUz8TEKS72Rom9gDMFhL-2UF0RvHdjXXlrylPNcX7UFevfoZAqs-AySzMU6gi8ErcyG62k");
+
+            // turn voronoi cells into closed book pages
+                d3.selectAll(".voronoiCell")
+                    .transition()
+                    .delay(500)
+                    .duration(1000)
+                    .attrTween("d", _pathTween("toClosedPages"));
+
+            // // open google scholar after 2 seconds
+            // setTimeout(function() {
+            //     window.open("https://scholar.google.com/citations?view_op=list_works&hl=en&user=J8844tYAAAAJ&gmla=AJsN-F4WM8ISYnDVhcN0sGvNM59w-d-dy4wZsYu_WB6Ifs_31fUz8TEKS72Rom9gDMFhL-2UF0RvHdjXXlrylPNcX7UFevfoZAqs-AySzMU6gi8ErcyG62k");
+            // }, 2000);
         }
 
         else {
