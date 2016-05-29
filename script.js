@@ -223,6 +223,14 @@ svg.append("image")
                 .duration(300)
                 .attr("fill-opacity", 0)
                 .attr("stroke-opacity", 0);
+
+
+            // tween for coloured piano keys
+            d3.selectAll(".voronoiCell")
+                .transition()
+                .duration(1000)
+                .attrTween("d", _pathTween("fromPiano"));
+
         }
     })
 
@@ -234,10 +242,10 @@ $(".title").bind('touchstart click', function(){
         // no longer on the main menu
         vizObj.onMainMenu = false;
 
-        var thisTitle = d3.select(this).data();
+        vizObj.thisTitle = d3.select(this).data();
 
         // publications
-        if (thisTitle == "Publications") {
+        if (vizObj.thisTitle == "Publications") {
             window.open("https://scholar.google.com/citations?view_op=list_works&hl=en&user=J8844tYAAAAJ&gmla=AJsN-F4WM8ISYnDVhcN0sGvNM59w-d-dy4wZsYu_WB6Ifs_31fUz8TEKS72Rom9gDMFhL-2UF0RvHdjXXlrylPNcX7UFevfoZAqs-AySzMU6gi8ErcyG62k");
         }
 
@@ -248,11 +256,11 @@ $(".title").bind('touchstart click', function(){
                 .transition()
                 .duration(500)
                 .attr("fill-opacity", function(d) {
-                    return (d == thisTitle) ? 1 : 0;
+                    return (d == vizObj.thisTitle) ? 1 : 0;
                 });
 
             // move this title to top left of page
-            d3.selectAll(".title_" + thisTitle)
+            d3.selectAll(".title_" + vizObj.thisTitle)
                 .transition()
                 .delay(500)
                 .duration(800)
@@ -270,14 +278,14 @@ $(".title").bind('touchstart click', function(){
                 .attr("opacity", 0.5)
 
             // for each title, act accordingly
-            if (thisTitle == "Music") {
+            if (vizObj.thisTitle == "Music") {
 
                 // turn voronoi cells into white piano keys
                 d3.selectAll(".voronoiCell")
                     .transition()
                     .delay(500)
                     .duration(1000)
-                    .attrTween("d", _pathTween());
+                    .attrTween("d", _pathTween("toPiano"));
 
                 // expose black piano keys
                 d3.selectAll(".blackPianoKey")
@@ -344,7 +352,7 @@ $(".title").bind('touchstart click', function(){
                 }, 1000);
             }
 
-            if (thisTitle == "Contact") {
+            if (vizObj.thisTitle == "Contact") {
                 
                 // fade out all voronoi cells
                 d3.selectAll(".voronoiCell")

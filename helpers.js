@@ -104,8 +104,9 @@ function _polygon(d) {
 
 /* tween function to transition to the next path ("path" in the data)
 * Note: situations other than "move" - could be an exit situation, where the next path is blank
+* @param {String} changeType -- type of change to perform
 */
-function _pathTween() { 
+function _pathTween(changeType) { 
     
     var precision = 4;
 
@@ -121,7 +122,7 @@ function _pathTween() {
             p1;
 
         // for an exit situation, the path to move to is a line in the centre of the timesweep svg
-        dest_path = this.__data__.dest_path; 
+        dest_path = (changeType == "toPiano") ? this.__data__.dest_path : this.__data__.path; 
         path0 = this;
         path1 = path0.cloneNode();
         n0 = path0.getTotalLength();
